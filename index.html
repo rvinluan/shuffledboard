@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+    <script src="//cdn.jsdelivr.net/npm/phaser@3.18.1/dist/phaser.min.js"></script>
+    <script src="biscuit.js"></script>
+  </head>
+  <body>
+    <script>
+    var w = window.innerWidth;
+    var h = window.innerHeight;
+
+    var biscuits = [];
+
+    var config = {
+        type: Phaser.AUTO,
+        width: w,
+        height: h,
+        physics: {
+            default: 'arcade',
+            arcade: {
+                gravity: { y: 0 }
+            }
+        },
+        scene: {
+            preload: preload,
+            create: create,
+            update: update
+        }
+    };
+
+    var game = new Phaser.Game(config);
+
+    function preload () {
+    }
+
+    function create () {
+      var graphics = this.add.graphics({ fillStyle: { color: 0x322E27 } });
+
+      var board = new Phaser.Geom.Rectangle(100, 100, w-200, h-200);
+      graphics.fillRectShape(new Phaser.Geom.Rectangle(0, 0, w, h));
+      graphics.fillStyle(0xFFF5E7);
+      graphics.fillRectShape(board);
+
+      var b = new Biscuit(this);
+
+      this.input.on('pointerup', function(pointer) {
+        if(b.state == "AIMING") {
+          b.shoot(pointer.x, pointer.y);
+        }
+      })
+
+    }
+
+    function update() {
+
+    }
+    </script>
+  </body>
+</html>
