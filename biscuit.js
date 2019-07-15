@@ -1,4 +1,4 @@
-var Biscuit = function(scene) {
+var Biscuit = function(scene, group) {
   this.gameObject = scene.add.ellipse(w/2, h-200, 100, 100,0x6666ff).setInteractive();
   scene.physics.add.existing(this.gameObject);
 
@@ -10,6 +10,8 @@ var Biscuit = function(scene) {
   this.gameObject.body.allowDrag = true;
   this.gameObject.body.collideWorldBounds = true;
 
+  // group.add(this.gameObject);
+
   this.state = "LOADED";
 
   this.gameObject.on('pointerdown', function(pointer) {
@@ -19,15 +21,19 @@ var Biscuit = function(scene) {
         x: pointer.x,
         y: pointer.y
       }
-      console.log("aiming...");
+      // console.log("aiming...");
     }
   }.bind(this))
 }
 
 Biscuit.prototype.shoot = function(x, y) {
-  this.state = "LOADED";
+  this.state = "SHOT";
   var vector = new Phaser.Math.Vector2(x - this.aimFrom.x, y - this.aimFrom.y);
-  console.log("shot length: "+vector.length());
+  // console.log("shot length: "+vector.length());
   this.gameObject.body.setVelocity(vector.x*2, vector.y*2);
   this.gameObject.body.setDrag(100, 100);
+}
+
+Biscuit.prototype.isMoving = function() {
+  return !(this.gameObject.body.velocity.length() == 0);
 }

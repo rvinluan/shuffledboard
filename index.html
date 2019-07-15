@@ -12,6 +12,7 @@
     var h = window.innerHeight;
 
     var biscuits = [];
+    var biscuitsGroup;
 
     var config = {
         type: Phaser.AUTO,
@@ -42,19 +43,32 @@
       graphics.fillRectShape(new Phaser.Geom.Rectangle(0, 0, w, h));
       graphics.fillStyle(0xFFF5E7);
       graphics.fillRectShape(board);
+      biscuitsGroup = this.physics.add.group();
+      biscuitsGroup.collideWorldBounds = true;
 
-      var b = new Biscuit(this);
+      var b = new Biscuit(this, biscuitsGroup);
+      biscuits.push(b);
+
+      this.physics.add.collider(biscuitsGroup, biscuitsGroup);
 
       this.input.on('pointerup', function(pointer) {
-        if(b.state == "AIMING") {
-          b.shoot(pointer.x, pointer.y);
+        for(var i = 0; i < biscuits.length; i++) {
+          if(biscuits[i].state == "AIMING") {
+            biscuits[i].shoot(pointer.x, pointer.y);
+          }
         }
       })
 
     }
 
     function update() {
-
+      for(var i = 0; i < biscuits.length; i++) {
+        if(!biscuits[i].isMoving() && biscuits[i].state == "SHOT") {
+          biscuits[i].state = "STILL";
+          biscuits.push(new Biscuit(this, biscuitsGroup));
+          break;
+        }
+      }
     }
     </script>
   </body>
