@@ -1,16 +1,10 @@
-var Biscuit = function(scene, group) {
-  this.gameObject = scene.add.ellipse(w/2, h-200, 100, 100,0x6666ff).setInteractive();
-  scene.physics.add.existing(this.gameObject);
-
-  this.gameObject.body.velocity.x = 0;
-  this.gameObject.body.velocity.y = 0;
-  // this.gameObject.body.setMaxSpeed(1000);
-  this.gameObject.body.bounce.x = 0.1;
-  this.gameObject.body.bounce.y = 0.1;
-  this.gameObject.body.allowDrag = true;
-  this.gameObject.body.collideWorldBounds = true;
-
-  // group.add(this.gameObject);
+var Biscuit = function(scene) {
+  this.gameObject = scene.add.ellipse(w/2, config.board.origin.y + config.board.height, 80, 80,0x6666ff).setInteractive();
+  var body = Phaser.Physics.Matter.Matter.Bodies.circle(this.gameObject.x, this.gameObject.y, 40);
+  this.matterBody = scene.matter.add.gameObject(this.gameObject, body);
+  this.matterBody.body.frictionAir = 0.02;
+  Phaser.Physics.Matter.Matter.Body.setDensity(this.matterBody.body, 1.1);
+  Phaser.Physics.Matter.Matter.Body.set(this.matterBody.body, "restitution", 0.8);
 
   this.state = "LOADED";
 
@@ -28,12 +22,14 @@ var Biscuit = function(scene, group) {
 
 Biscuit.prototype.shoot = function(x, y) {
   this.state = "SHOT";
-  var vector = new Phaser.Math.Vector2(x - this.aimFrom.x, y - this.aimFrom.y);
-  // console.log("shot length: "+vector.length());
-  this.gameObject.body.setVelocity(vector.x*2, vector.y*2);
-  this.gameObject.body.setDrag(100, 100);
+  var vector = new Phaser.Math.Vector2(x-this.aimFrom.x, y-this.aimFrom.y);
+  Phaser.Physics.Matter.Matter.Body.applyForce(this.matterBody.body, this.aimFrom, vector.scale(1));
 }
 
 Biscuit.prototype.isMoving = function() {
-  return !(this.gameObject.body.velocity.length() == 0);
+  return !(this.matterBody.body.speed <= 0.1);
+}
+
+Biscuit.prototype.isInside = function(rect) {
+  return Phaser.Geom.Rectangle.Contains(rect, this.gameObject.x, this.gameObject.y);
 }

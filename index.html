@@ -3,25 +3,47 @@
   <head>
     <meta charset="utf-8">
     <title></title>
-    <script src="//cdn.jsdelivr.net/npm/phaser@3.18.1/dist/phaser.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/phaser@3.18.1/dist/phaser.js"></script>
     <script src="biscuit.js"></script>
+    <script src="enemy.js"></script>
   </head>
   <body>
+    <!-- helpers -->
+    <script>
+      Math.randomBetween = function(min, max) {
+        return min + Math.floor(Math.random() * (max - min));
+      }
+    </script>
+    <!-- game -->
     <script>
     var w = window.innerWidth;
     var h = window.innerHeight;
 
     var biscuits = [];
-    var biscuitsGroup;
+    var enemies = [];
+    var turn = 1; //odd is player turn, even is enemy
+    var board; //holds the board rectangle geometry
+
+    var scoreAreas = [];
 
     var config = {
         type: Phaser.AUTO,
         width: w,
         height: h,
+        board: {
+          width: 600,
+          height: 1600,
+          get origin() {
+            return {
+              x: (w - this.width)/2,
+              y: (h - this.height)/2
+            }
+          }
+        },
         physics: {
-            default: 'arcade',
-            arcade: {
-                gravity: { y: 0 }
+            default: 'matter',
+            matter: {
+              debug: true
             }
         },
         scene: {
@@ -34,22 +56,45 @@
     var game = new Phaser.Game(config);
 
     function preload () {
+      this.load.image('score','score-area-2.png');
     }
 
     function create () {
       var graphics = this.add.graphics({ fillStyle: { color: 0x322E27 } });
 
-      var board = new Phaser.Geom.Rectangle(100, 100, w-200, h-200);
+      // var score = this.add.image(w/2,150,'score').setOrigin(0.5,0);
+      // score.scaleX = 2;
+      // score.scaleY = 2;
+
+      this.matter.world.setBounds(0, 0, w, h);
+      this.matter.world.setGravity(0, 0);
+
+      board = new Phaser.Geom.Rectangle(
+        config.board.origin.x,
+        config.board.origin.y,
+        config.board.width,
+        config.board.height
+      );
       graphics.fillRectShape(new Phaser.Geom.Rectangle(0, 0, w, h));
       graphics.fillStyle(0xFFF5E7);
       graphics.fillRectShape(board);
-      biscuitsGroup = this.physics.add.group();
-      biscuitsGroup.collideWorldBounds = true;
 
-      var b = new Biscuit(this, biscuitsGroup);
+      //setup score scoreAreas
+      for(var i = 0; i < 3; i++) {
+        let sw = Math.randomBetween(100,250);
+        let s = new Phaser.Geom.Circle(
+          config.width/2 + Math.randomBetween(-50,50),
+          config.board.origin.y + 300 + (200*i),
+          sw
+        );
+        graphics.lineStyle(5, 0xfc7244);
+        graphics.fillStyle(0xff0000)
+        graphics.strokeCircleShape(s);
+        scoreAreas.push(s);
+      }
+
+      var b = new Biscuit(this);
       biscuits.push(b);
-
-      this.physics.add.collider(biscuitsGroup, biscuitsGroup);
 
       this.input.on('pointerup', function(pointer) {
         for(var i = 0; i < biscuits.length; i++) {
@@ -62,12 +107,63 @@
     }
 
     function update() {
+      var biscuitsmoving = false;
+      var enemiesmoving = false;
       for(var i = 0; i < biscuits.length; i++) {
         if(!biscuits[i].isMoving() && biscuits[i].state == "SHOT") {
-          biscuits[i].state = "STILL";
-          biscuits.push(new Biscuit(this, biscuitsGroup));
-          break;
+          biscuitsmoving = false;
+        } else {
+          biscuitsmoving = true;
         }
+        if(!biscuits[i].isInside(board)) {
+          biscuits[i].gameObject.destroy();
+          biscuits.splice(i,1);
+        }
+      }
+      for(var i = 0; i < enemies.length; i++) {
+        if(enemies[i].isMoving()) {
+          enemiesmoving = true;
+        }
+        if(!enemies[i].isInside(board)) {
+          enemies[i].gameObject.destroy();
+          enemies.splice(i,1);
+        }
+      }
+
+      if(!biscuitsmoving && !enemiesmoving) {
+        checkforTurnEnd(this);
+      }
+    }
+
+    function checkforTurnEnd(scene) {
+      if( turn > 8) { return; }
+      if( turn % 2 == 1) {
+        //check for end of player turn
+        if(biscuits.length > 0) {
+          for(var i = 0; i < biscuits.length; i++) {
+            if(biscuits[i].isMoving()) {
+              return;
+            }
+          }
+        }
+        turn++;
+        // startEnemyTurn()
+        enemies.push(new Enemy(scene));
+        enemies[enemies.length - 1].shoot(
+          config.width/2 + Math.randomBetween(-150,150),
+          config.board.origin.y + Math.randomBetween(config.height/2+100,config.height/2+200)
+        );
+      } else {
+        //check for end of enemy turn
+        if(enemies.length == 0) {
+          for(var i = 0; i < enemies.length; i++) {
+            if(enemies[i].isMoving()) {
+              return;
+            }
+          }
+        }
+        turn++;
+        biscuits.push(new Biscuit(scene));
       }
     }
     </script>
