@@ -43,7 +43,7 @@
         physics: {
             default: 'matter',
             matter: {
-              debug: true
+              debug: false
             }
         },
         scene: {
@@ -56,7 +56,8 @@
     var game = new Phaser.Game(config);
 
     function preload () {
-      this.load.image('score','score-area-2.png');
+      this.load.image('biscuit','biscuit.png');
+      this.load.image('enemy','Enemy.png');
     }
 
     function create () {
@@ -150,8 +151,8 @@
         // startEnemyTurn()
         enemies.push(new Enemy(scene));
         enemies[enemies.length - 1].shoot(
-          config.width/2 + Math.randomBetween(-150,150),
-          config.board.origin.y + Math.randomBetween(config.height/2+100,config.height/2+200)
+          config.width/2 + Math.randomBetween(-50,50),
+          config.board.origin.y + Math.randomBetween(config.height/2+200,config.height/2+200)
         );
       } else {
         //check for end of enemy turn

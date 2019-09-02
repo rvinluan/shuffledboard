@@ -1,10 +1,13 @@
 var Enemy = function(scene) {
-  this.gameObject = scene.add.ellipse(w/2, config.board.origin.y + config.board.height, 80, 80,0x000000).setInteractive();
-  var body = Phaser.Physics.Matter.Matter.Bodies.circle(this.gameObject.x, this.gameObject.y, 40);
+  var spr = scene.add.sprite(w/2, config.board.origin.y + config.board.height, 'enemy').setInteractive();
+  this.gameObject = spr;
+  var body = Phaser.Physics.Matter.Matter.Bodies.circle(this.gameObject.x, this.gameObject.y, 30);
   this.matterBody = scene.matter.add.gameObject(this.gameObject, body);
   this.matterBody.body.frictionAir = 0.02;
-  Phaser.Physics.Matter.Matter.Body.setDensity(this.matterBody.body, 1.1);
+  Phaser.Physics.Matter.Matter.Body.setInertia(this.matterBody.body, Infinity);
+  Phaser.Physics.Matter.Matter.Body.setDensity(this.matterBody.body, 2);
   Phaser.Physics.Matter.Matter.Body.set(this.matterBody.body, "restitution", 0.8);
+  this.matterBody.displayOriginY = 40;
 
   this.state = "LOADED";
 }
