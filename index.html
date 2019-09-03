@@ -24,6 +24,8 @@
     var turn = 1; //odd is player turn, even is enemy
     var board; //holds the board rectangle geometry
 
+    var graphics;
+
     var scoreAreas = [];
 
     var config = {
@@ -61,7 +63,7 @@
     }
 
     function create () {
-      var graphics = this.add.graphics({ fillStyle: { color: 0x322E27 } });
+      graphics = this.add.graphics({ fillStyle: { color: 0x322E27 } });
 
       // var score = this.add.image(w/2,150,'score').setOrigin(0.5,0);
       // score.scaleX = 2;

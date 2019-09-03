@@ -1,6 +1,11 @@
 var Biscuit = function(scene) {
+  var b = new Phaser.GameObjects.Group(scene);
   var spr = scene.add.sprite(w/2, config.board.origin.y + config.board.height - 40,'biscuit').setInteractive();
   this.gameObject = spr;
+  b.add(this.gameObject)
+  this.tago = scene.add.ellipse(w/2, config.board.origin.y + config.board.height - 40,200,200,0x000000,0.1).setInteractive();
+  b.add(this.tago);
+  this.group = b;
   var body = Phaser.Physics.Matter.Matter.Bodies.circle(this.gameObject.x, this.gameObject.y, 30);
   this.matterBody = scene.matter.add.gameObject(this.gameObject, body);
   this.matterBody.body.frictionAir = 0.02;
@@ -11,7 +16,7 @@ var Biscuit = function(scene) {
 
   this.state = "LOADED";
 
-  this.gameObject.on('pointerdown', function(pointer) {
+  this.tago.on('pointerdown', function(pointer) {
     if(this.state == "LOADED") {
       this.state = "AIMING";
       this.aimFrom = {
