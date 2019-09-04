@@ -15,8 +15,8 @@ var Biscuit = function(scene) {
     if(this.state == "LOADED") {
       this.state = "AIMING";
       this.aimFrom = {
-        x: pointer.x,
-        y: pointer.y
+        x: this.gameObject.x,
+        y: this.gameObject.y
       }
     }
   }.bind(this))
@@ -24,8 +24,8 @@ var Biscuit = function(scene) {
 
 Biscuit.prototype.shoot = function(x, y) {
   this.state = "SHOT";
-  var vector = new Phaser.Math.Vector2(x-this.aimFrom.x, y-this.aimFrom.y);
-  Phaser.Physics.Matter.Matter.Body.applyForce(this.matterBody.body, this.aimFrom, vector.scale(1));
+  var vector = new Phaser.Math.Vector2(x-this.gameObject.x, y-this.gameObject.y);
+  Phaser.Physics.Matter.Matter.Body.applyForce(this.matterBody.body, this.gameObject, vector.scale(1));
   biscuitsUsed++;
   turnIndicators[5-biscuitsUsed].setTexture('biscuit-used');
 }
