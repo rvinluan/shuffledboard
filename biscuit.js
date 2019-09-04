@@ -1,11 +1,6 @@
 var Biscuit = function(scene) {
-  var b = new Phaser.GameObjects.Group(scene);
-  var spr = scene.add.sprite(w/2, config.board.origin.y + config.board.height - 40,'biscuit').setInteractive();
-  this.gameObject = spr;
-  b.add(this.gameObject)
-  this.tago = scene.add.ellipse(w/2, config.board.origin.y + config.board.height - 40,200,200,0x000000,0.1).setInteractive();
-  b.add(this.tago);
-  this.group = b;
+  this.gameObject = scene.add.sprite(w/2, config.board.origin.y + config.board.height - 40,'biscuit').setInteractive();
+  this.tago = scene.add.ellipse(w/2, config.board.origin.y + config.board.height - 40,200,200,0x000000,0,this.gameObject).setInteractive();
   var body = Phaser.Physics.Matter.Matter.Bodies.circle(this.gameObject.x, this.gameObject.y, 30);
   this.matterBody = scene.matter.add.gameObject(this.gameObject, body);
   this.matterBody.body.frictionAir = 0.02;
@@ -23,7 +18,6 @@ var Biscuit = function(scene) {
         x: pointer.x,
         y: pointer.y
       }
-      // console.log("aiming...");
     }
   }.bind(this))
 }
@@ -32,6 +26,8 @@ Biscuit.prototype.shoot = function(x, y) {
   this.state = "SHOT";
   var vector = new Phaser.Math.Vector2(x-this.aimFrom.x, y-this.aimFrom.y);
   Phaser.Physics.Matter.Matter.Body.applyForce(this.matterBody.body, this.aimFrom, vector.scale(1));
+  biscuitsUsed++;
+  turnIndicators[5-biscuitsUsed].setTexture('biscuit-used');
 }
 
 Biscuit.prototype.isMoving = function() {

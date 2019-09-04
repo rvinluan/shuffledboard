@@ -21,10 +21,14 @@
 
     var biscuits = [];
     var enemies = [];
-    var turn = 1; //odd is player turn, even is enemy
     var board; //holds the board rectangle geometry
 
+    var turn = 1; //odd is player turn, even is enemy
+    var turnIndicators = [];
+    var biscuitsUsed = 0;
+
     var graphics;
+    var dynamicGraphics;
 
     var scoreAreas = [];
 
@@ -59,11 +63,14 @@
 
     function preload () {
       this.load.image('biscuit','biscuit.png');
+      this.load.image('biscuit-used','biscuit-used.png');
+      this.load.image('biscuit-remaining','biscuit-remaining.png');
       this.load.image('enemy','Enemy.png');
     }
 
     function create () {
       graphics = this.add.graphics({ fillStyle: { color: 0x322E27 } });
+      dynamicGraphics = this.add.graphics();
 
       // var score = this.add.image(w/2,150,'score').setOrigin(0.5,0);
       // score.scaleX = 2;
@@ -84,16 +91,28 @@
 
       //setup score scoreAreas
       for(var i = 0; i < 3; i++) {
-        let sw = Math.randomBetween(100,250);
-        let s = new Phaser.Geom.Circle(
-          config.width/2 + Math.randomBetween(-50,50),
-          config.board.origin.y + 300 + (200*i),
-          sw
-        );
+        let sx = config.width/2 + Math.randomBetween(-50,50);
+        let sy = config.board.origin.y + 300 + (200*i);
+        let sw = Math.randomBetween(100,200);
+        let s = new Phaser.Geom.Circle(sx+16, sy+16, sw);
+        let pts = Math.randomBetween(1, 50);
+        pts = Math.ceil(pts / 10) * 10;
         graphics.lineStyle(5, 0xfc7244);
         graphics.fillStyle(0xff0000)
         graphics.strokeCircleShape(s);
-        scoreAreas.push(s);
+        this.add.text(sx, sy, pts, {
+          fontSize: "32px",
+          color: "#E15B3E"
+        });
+      }
+
+      //draw ui
+      for(var j = 0; j < 5; j++) {
+        let bi = this.add.sprite(
+          (config.width - config.board.width) / 4,
+          config.board.origin.y + (j*30) + 18,
+          'biscuit-remaining');
+        turnIndicators.push(bi);
       }
 
       var b = new Biscuit(this);
@@ -103,10 +122,37 @@
         for(var i = 0; i < biscuits.length; i++) {
           if(biscuits[i].state == "AIMING") {
             biscuits[i].shoot(pointer.x, pointer.y);
+            dynamicGraphics.clear();
           }
         }
       })
 
+      this.input.on('pointermove', function(pointer){
+        for(var i = 0; i < biscuits.length; i++) {
+          if(biscuits[i].state == "AIMING") {
+            let bx = biscuits[i].gameObject.x;
+            let by = biscuits[i].gameObject.y;
+            var v = new Phaser.Math.Vector2(
+              pointer.x - bx,
+              pointer.y - by
+            );
+            let vm = v.length();
+            v.scale( (vm + 500) / vm );
+            dynamicGraphics.clear();
+            dynamicGraphics.lineStyle(1, "#000000");
+            dynamicGraphics.lineBetween(
+              bx,
+              by,
+              bx + v.x,
+              by + v.y
+            );
+          }
+        }
+      })
+
+    }
+
+    function preUpdate() {
     }
 
     function update() {
@@ -150,7 +196,6 @@
           }
         }
         turn++;
-        // startEnemyTurn()
         enemies.push(new Enemy(scene));
         enemies[enemies.length - 1].shoot(
           config.width/2 + Math.randomBetween(-50,50),
