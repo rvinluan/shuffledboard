@@ -24,6 +24,7 @@ var Biscuit = function(scene) {
 
 Biscuit.prototype.shoot = function(x, y) {
   this.state = "SHOT";
+  this.tago.destroy();
   var vector = new Phaser.Math.Vector2(x-this.gameObject.x, y-this.gameObject.y);
   Phaser.Physics.Matter.Matter.Body.applyForce(this.matterBody.body, this.gameObject, vector.scale(1));
   biscuitsUsed++;

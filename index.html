@@ -138,6 +138,15 @@
           if(biscuits[i].state == "AIMING") {
             biscuits[i].shoot(pointer.x, pointer.y);
             dynamicGraphics.clear();
+          } else if (biscuits[i].state == "LOADED") {
+            let increment = config.board.width / 5;
+            if(pointer.x < config.width/2 && biscuits[i].gameObject.x - increment > config.board.origin.x) {
+              biscuits[i].gameObject.x -= increment;
+              biscuits[i].tago.x -= increment;
+            } else if (pointer.x >= config.width/2 && biscuits[i].gameObject.x + increment < config.board.origin.x + config.board.width) {
+              biscuits[i].gameObject.x += increment;
+              biscuits[i].tago.x += increment;
+            }
           }
         }
       })
@@ -154,7 +163,7 @@
             let vm = v.length();
             v.scale( (vm + 500) / vm );
             dynamicGraphics.clear();
-            dynamicGraphics.lineStyle(1, "#000000");
+            dynamicGraphics.lineStyle(2, "#000000");
             dynamicGraphics.lineBetween(
               bx,
               by,
@@ -163,8 +172,7 @@
             );
             let a = v.clone(); //arrowhead vector
             a.normalize();
-            a.scale(25);
-            dynamicGraphics.lineStyle(1, "#0000ff");
+            a.scale(50);
             //right head of arrow
             dynamicGraphics.lineBetween(
               bx + v.x,
@@ -179,7 +187,6 @@
               bx + v.x + (a.x * Math.cos(Math.PI*1.25)) - (a.y * Math.sin(Math.PI*1.25)),
               by + v.y + (a.x * Math.sin(Math.PI*1.25)) + (a.y * Math.cos(Math.PI*1.25))
             );
-
           }
         }
       })

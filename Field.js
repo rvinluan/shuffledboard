@@ -31,9 +31,8 @@ Field.prototype.a = function() {
     let sy = config.board.origin.y + 300 + (200*i);
     let sw = Math.randomBetween(100,200);
     let s = new Phaser.Geom.Circle(sx+16, sy+16, sw);
-    let pts = Math.randomBetween(1, 50);
+    let pts = Math.randomBetween(5, 10);
     let txt;
-    pts = Math.ceil(pts / 10) * 10;
     this.scoreGeometry.push(s);
     this.scoreValues.push(pts);
     this.graphics.lineStyle(5, 0xfc7244);
@@ -60,19 +59,19 @@ Field.prototype.b = function() {
       sy = config.board.origin.y + 500;
       sw = Math.randomBetween(80,100);
       s = new Phaser.Geom.Circle(sx, sy, sw);
-      pts = Math.randomBetween(5, 10);
+      pts = Math.randomBetween(10, 15);
     } else if(i % 2 == 0) {
       sx = config.board.origin.x + Math.randomBetween(150,200);
       sy = config.board.origin.y + 150 + (200*(i-1));
       sw = Math.randomBetween(80,150);
       s = new Phaser.Geom.Circle(sx, sy, sw);
-      pts = Math.randomBetween(1, 5);
+      pts = Math.randomBetween(3, 8);
     } else {
       sx = config.board.origin.x + config.board.width - Math.randomBetween(150,200);
       sy = config.board.origin.y + 150 + (200*(i-1));
       sw = Math.randomBetween(80,150);
       s = new Phaser.Geom.Circle(sx, sy, sw);
-      pts = Math.randomBetween(1, 5);
+      pts = Math.randomBetween(3, 8);
     }
     this.scoreGeometry.push(s);
     this.scoreValues.push(pts);

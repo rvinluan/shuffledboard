@@ -1,7 +1,6 @@
 #scorecard {
   position: absolute;
   bottom: 20vh;
-  width: 60vw;
   background: white;
   font-size: 32px;
   padding: 25px;
@@ -23,9 +22,15 @@
   color: #E15B3E;
 }
 
+#scorecard hr {
+  border: 1px solid black;
+}
+
 .row-score {
-  font-size: 70px;
-  font-weight: bold;
+    font-size: 120px;
+    font-weight: bold;
+    padding-left: 100px;
+    line-height: 1;
 }
 
 #scorecard .button-container {
