@@ -40,7 +40,9 @@ Field.prototype.a = function() {
     this.graphics.strokeCircleShape(s);
     txt = this.scene.add.text(sx-20, sy-20, pts, {
       fontSize: "40px",
-      color: "#E15B3E"
+      color: "#E15B3E",
+      fontFamily: "Space Mono",
+      fontWeight: "bold"
     });
     this.scoreText.push(txt);
   }
@@ -79,13 +81,15 @@ Field.prototype.b = function() {
       this.graphics.lineStyle(5, 0x8381C5);
       txt = this.scene.add.text(sx-20, sy-20, pts, {
         fontSize: "40px",
-        color: "#8381C5"
+        color: "#8381C5",
+        fontFamily: "Space Mono",
       });
     } else {
       this.graphics.lineStyle(5, 0xfc7244);
       txt = this.scene.add.text(sx-20, sy-20, pts, {
         fontSize: "40px",
-        color: "#fc7244"
+        color: "#fc7244",
+        fontFamily: "Space Mono"
       });
     }
     this.graphics.strokeCircleShape(s);
