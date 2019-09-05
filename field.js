@@ -30,7 +30,7 @@ Field.prototype.a = function() {
     let sx = config.width/2 + Math.randomBetween(-50,50);
     let sy = config.board.origin.y + 300 + (200*i);
     let sw = Math.randomBetween(100,200);
-    let s = new Phaser.Geom.Circle(sx+16, sy+16, sw);
+    let s = new Phaser.Geom.Circle(sx, sy, sw);
     let pts = Math.randomBetween(5, 10);
     let txt;
     this.scoreGeometry.push(s);
@@ -38,8 +38,8 @@ Field.prototype.a = function() {
     this.graphics.lineStyle(5, 0xfc7244);
     this.graphics.fillStyle(0xff0000)
     this.graphics.strokeCircleShape(s);
-    txt = this.scene.add.text(sx, sy, pts, {
-      fontSize: "32px",
+    txt = this.scene.add.text(sx-20, sy-20, pts, {
+      fontSize: "40px",
       color: "#E15B3E"
     });
     this.scoreText.push(txt);
@@ -77,14 +77,14 @@ Field.prototype.b = function() {
     this.scoreValues.push(pts);
     if(i == 0) {
       this.graphics.lineStyle(5, 0x8381C5);
-      txt = this.scene.add.text(sx-16, sy-16, pts, {
-        fontSize: "32px",
+      txt = this.scene.add.text(sx-20, sy-20, pts, {
+        fontSize: "40px",
         color: "#8381C5"
       });
     } else {
       this.graphics.lineStyle(5, 0xfc7244);
-      txt = this.scene.add.text(sx-16, sy-16, pts, {
-        fontSize: "32px",
+      txt = this.scene.add.text(sx-20, sy-20, pts, {
+        fontSize: "40px",
         color: "#fc7244"
       });
     }
