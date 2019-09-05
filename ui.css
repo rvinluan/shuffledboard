@@ -1,0 +1,44 @@
+#scorecard {
+  position: absolute;
+  bottom: 20vh;
+  width: 60vw;
+  background: white;
+  font-size: 32px;
+  padding: 25px;
+  font-family: "Space Mono";
+  left: -100vw;
+  transition: left .1s;
+}
+
+#scorecard.shown {
+  left: 0;
+}
+
+#scorecard .row {
+  display: flex;
+  justify-content: space-between;
+}
+
+#scorecard .row.total {
+  color: #E15B3E;
+}
+
+.row-score {
+  font-size: 70px;
+  font-weight: bold;
+}
+
+#scorecard .button-container {
+  text-align: right;
+  margin-top: 20px;
+}
+
+#scorecard button {
+  font-family: "Space Mono";
+  font-size: 30px;
+  padding: 20px 40px;
+  background: #322E27;
+  border: none;
+  color: white;
+  cursor: pointer;
+}

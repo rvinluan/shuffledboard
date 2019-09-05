@@ -3,11 +3,33 @@
   <head>
     <meta charset="utf-8">
     <title></title>
-    <script src="//cdn.jsdelivr.net/npm/phaser@3.18.1/dist/phaser.js"></script>
+    <!-- <script src="//cdn.jsdelivr.net/npm/phaser@3.18.1/dist/phaser.js"></script> -->
+    <script src="phaser.min.js"></script>
+    <script src="field.js"></script>
     <script src="biscuit.js"></script>
     <script src="enemy.js"></script>
+    <link rel="stylesheet" href="ui.css">
   </head>
   <body>
+    <!-- UI, which is done in html and css because it's so much better for laying out things -->
+    <div id="scorecard">
+      <div class="row">
+        <div class="row-label">Your Score</div>
+        <div class="row-score your-score">14</div>
+      </div>
+      <div class="row">
+        <div class="row-label">Enemy Score</div>
+        <div class="row-score enemy-score">30</div>
+      </div>
+      <hr>
+      <div class="row total">
+        <div class="row-label">Total</div>
+        <div class="row-score total-score">32</div>
+      </div>
+      <div class="button-container">
+        <button class="restart">Restart</button>
+      </div>
+    </div>
     <!-- helpers -->
     <script>
       Math.randomBetween = function(min, max) {
@@ -29,6 +51,7 @@
 
     var graphics;
     var dynamicGraphics;
+    var endGraphics;
 
     var scoreAreas = [];
 
@@ -89,34 +112,26 @@
       graphics.fillStyle(0xFFF5E7);
       graphics.fillRectShape(board);
 
-      //setup score scoreAreas
-      for(var i = 0; i < 3; i++) {
-        let sx = config.width/2 + Math.randomBetween(-50,50);
-        let sy = config.board.origin.y + 300 + (200*i);
-        let sw = Math.randomBetween(100,200);
-        let s = new Phaser.Geom.Circle(sx+16, sy+16, sw);
-        let pts = Math.randomBetween(1, 50);
-        pts = Math.ceil(pts / 10) * 10;
-        graphics.lineStyle(5, 0xfc7244);
-        graphics.fillStyle(0xff0000)
-        graphics.strokeCircleShape(s);
-        this.add.text(sx, sy, pts, {
-          fontSize: "32px",
-          color: "#E15B3E"
-        });
-      }
+      this.field = new Field(this);
+      this.field.init();
 
       //draw ui
       for(var j = 0; j < 5; j++) {
         let bi = this.add.sprite(
           (config.width - config.board.width) / 4,
-          config.board.origin.y + (j*30) + 18,
+          config.board.origin.y + (j*50) + 25,
           'biscuit-remaining');
+        bi.displayWidth = bi.width*2;
+        bi.displayHeight = bi.height*2;
         turnIndicators.push(bi);
       }
 
       var b = new Biscuit(this);
       biscuits.push(b);
+
+      document.querySelector(".restart").addEventListener('click', function(){
+        restart(this);
+      }.bind(this));
 
       this.input.on('pointerup', function(pointer) {
         for(var i = 0; i < biscuits.length; i++) {
@@ -145,6 +160,24 @@
               by,
               bx + v.x,
               by + v.y
+            );
+            let a = v.clone(); //arrowhead vector
+            a.normalize();
+            a.scale(25);
+            dynamicGraphics.lineStyle(1, "#0000ff");
+            //right head of arrow
+            dynamicGraphics.lineBetween(
+              bx + v.x,
+              by + v.y,
+              bx + v.x + (a.x * Math.cos(Math.PI*0.75)) - (a.y * Math.sin(Math.PI*0.75)),
+              by + v.y + (a.x * Math.sin(Math.PI*0.75)) + (a.y * Math.cos(Math.PI*0.75))
+            );
+            //left head of arrow
+            dynamicGraphics.lineBetween(
+              bx + v.x,
+              by + v.y,
+              bx + v.x + (a.x * Math.cos(Math.PI*1.25)) - (a.y * Math.sin(Math.PI*1.25)),
+              by + v.y + (a.x * Math.sin(Math.PI*1.25)) + (a.y * Math.cos(Math.PI*1.25))
             );
 
           }
@@ -186,7 +219,10 @@
     }
 
     function checkforTurnEnd(scene) {
-      if( turn > 8) { return; }
+      if( turn > 8 ) {
+        calculateEndScore(scene);
+        return;
+      }
       if( turn % 2 == 1) {
         //check for end of player turn
         if(biscuits.length > 0) {
@@ -214,6 +250,52 @@
         turn++;
         biscuits.push(new Biscuit(scene));
       }
+    }
+
+    function calculateEndScore(scene) {
+      let BiscuitSubtotal = 0;
+      let EnemySubtotal = 0;
+      for(var i = 0; i < scene.field.scoreGeometry.length; i++) {
+        for(var j = 0; j < biscuits.length; j++) {
+          if( scene.field.scoreGeometry[i].contains(biscuits[j].gameObject.x, biscuits[j].gameObject.y) ) {
+            BiscuitSubtotal += scene.field.scoreValues[i];
+          }
+        }
+        for(var k = 0; k < enemies.length; k++) {
+          if( scene.field.scoreGeometry[i].contains(enemies[k].gameObject.x, enemies[k].gameObject.y) ) {
+            EnemySubtotal += scene.field.scoreValues[i];
+          }
+        }
+      }
+      // console.log(`Your score: ${BiscuitSubtotal} – enemy score: ${EnemySubtotal} = ${BiscuitSubtotal-EnemySubtotal}`);
+
+      document.querySelector(".your-score").innerText = BiscuitSubtotal;
+      document.querySelector(".enemy-score").innerText = EnemySubtotal;
+      document.querySelector(".total-score").innerText = BiscuitSubtotal - EnemySubtotal;
+      document.querySelector("#scorecard").classList.add("shown");
+    }
+
+    function restart(scene) {
+      document.querySelector("#scorecard").classList.remove("shown");
+      turn = 1;
+      biscuitsUsed = 0;
+      scene.field.destroy();
+      scene.field = new Field(scene);
+      scene.field.init();
+      for(var i = 0; i < biscuits.length; i++) {
+        biscuits[i].gameObject.destroy();
+      }
+      for(var i = 0; i < enemies.length; i++) {
+        enemies[i].gameObject.destroy();
+      }
+      biscuits = [];
+      enemies = [];
+      for(var i = 0; i < turnIndicators.length; i++) {
+        turnIndicators[i].setTexture('biscuit-remaining');
+      }
+      var b = new Biscuit(scene);
+      biscuits.push(b);
+      // window.location.reload();
     }
     </script>
   </body>
