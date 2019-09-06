@@ -49,6 +49,7 @@
     var turn = 1; //odd is player turn, even is enemy
     var turnIndicators = [];
     var biscuitsUsed = 0;
+    var previousVelocity = new Phaser.Math.Vector2();
 
     var graphics;
     var dynamicGraphics;
@@ -68,7 +69,13 @@
               x: (w - this.width)/2,
               y: (h - this.height)/2
             }
+          },
+          get throwLineY() {
+            return this.origin.y + this.height - 400;
           }
+        },
+        gameplay: {
+          realisticAiming: location.search.match("real") !== null
         },
         physics: {
             default: 'matter',
@@ -113,6 +120,14 @@
       graphics.fillStyle(0xFFF5E7);
       graphics.fillRectShape(board);
 
+      graphics.lineStyle(5, 0xEFE4D3);
+      graphics.lineBetween(
+        config.board.origin.x,
+        config.board.throwLineY,
+        config.board.origin.x + config.board.width,
+        config.board.throwLineY
+      );
+
       this.field = new Field(this);
       this.field.init();
 
@@ -137,8 +152,12 @@
       this.input.on('pointerup', function(pointer) {
         for(var i = 0; i < biscuits.length; i++) {
           if(biscuits[i].state == "AIMING") {
-            biscuits[i].shoot(pointer.x, pointer.y);
             dynamicGraphics.clear();
+            if (config.gameplay.realisticAiming) {
+              biscuits[i].toss()
+            } else {
+              biscuits[i].shoot(pointer.x, pointer.y);
+            }
           } else if (biscuits[i].state == "LOADED") {
             let increment = config.board.width / 5;
             if(pointer.x < config.width/2 && biscuits[i].gameObject.x - increment > config.board.origin.x) {
@@ -155,39 +174,46 @@
       this.input.on('pointermove', function(pointer){
         for(var i = 0; i < biscuits.length; i++) {
           if(biscuits[i].state == "AIMING") {
-            let bx = biscuits[i].gameObject.x;
-            let by = biscuits[i].gameObject.y;
-            var v = new Phaser.Math.Vector2(
-              pointer.x - bx,
-              pointer.y - by
-            );
-            let vm = v.length();
-            v.scale( (vm + 500) / vm );
-            dynamicGraphics.clear();
-            dynamicGraphics.lineStyle(2, "#000000");
-            dynamicGraphics.lineBetween(
-              bx,
-              by,
-              bx + v.x,
-              by + v.y
-            );
-            let a = v.clone(); //arrowhead vector
-            a.normalize();
-            a.scale(50);
-            //right head of arrow
-            dynamicGraphics.lineBetween(
-              bx + v.x,
-              by + v.y,
-              bx + v.x + (a.x * Math.cos(Math.PI*0.75)) - (a.y * Math.sin(Math.PI*0.75)),
-              by + v.y + (a.x * Math.sin(Math.PI*0.75)) + (a.y * Math.cos(Math.PI*0.75))
-            );
-            //left head of arrow
-            dynamicGraphics.lineBetween(
-              bx + v.x,
-              by + v.y,
-              bx + v.x + (a.x * Math.cos(Math.PI*1.25)) - (a.y * Math.sin(Math.PI*1.25)),
-              by + v.y + (a.x * Math.sin(Math.PI*1.25)) + (a.y * Math.cos(Math.PI*1.25))
-            );
+            biscuits[i].previousVelocity.x = biscuits[i].gameObject.x;
+            biscuits[i].previousVelocity.y = biscuits[i].gameObject.y;
+            if(config.gameplay.realisticAiming) {
+              biscuits[i].gameObject.x = pointer.x;
+              biscuits[i].gameObject.y = pointer.y;
+            } else {
+              let bx = biscuits[i].gameObject.x;
+              let by = biscuits[i].gameObject.y;
+              var v = new Phaser.Math.Vector2(
+                pointer.x - bx,
+                pointer.y - by
+              );
+              let vm = v.length();
+              v.scale( (vm + 500) / vm );
+              dynamicGraphics.clear();
+              dynamicGraphics.lineStyle(2, "#000000");
+              dynamicGraphics.lineBetween(
+                bx,
+                by,
+                bx + v.x,
+                by + v.y
+              );
+              let a = v.clone(); //arrowhead vector
+              a.normalize();
+              a.scale(50);
+              //right head of arrow
+              dynamicGraphics.lineBetween(
+                bx + v.x,
+                by + v.y,
+                bx + v.x + (a.x * Math.cos(Math.PI*0.75)) - (a.y * Math.sin(Math.PI*0.75)),
+                by + v.y + (a.x * Math.sin(Math.PI*0.75)) + (a.y * Math.cos(Math.PI*0.75))
+              );
+              //left head of arrow
+              dynamicGraphics.lineBetween(
+                bx + v.x,
+                by + v.y,
+                bx + v.x + (a.x * Math.cos(Math.PI*1.25)) - (a.y * Math.sin(Math.PI*1.25)),
+                by + v.y + (a.x * Math.sin(Math.PI*1.25)) + (a.y * Math.cos(Math.PI*1.25))
+              );
+            }
           }
         }
       })
@@ -206,7 +232,12 @@
         } else {
           biscuitsmoving = true;
         }
-        if(!biscuits[i].isInside(board)) {
+        if(biscuits[i].state == "AIMING") {
+          if(biscuits[i].gameObject.y < config.board.throwLineY) {
+            biscuits[i].toss();
+          }
+        }
+        if(!biscuits[i].isInside(board) && biscuits[i].state !== "AIMING") {
           biscuits[i].gameObject.destroy();
           biscuits.splice(i,1);
         }
