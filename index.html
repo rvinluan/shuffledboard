@@ -160,7 +160,7 @@
           if(biscuits[i].state == "AIMING") {
             dynamicGraphics.clear();
             if (config.gameplay.realisticAiming) {
-              biscuits[i].toss()
+              // biscuits[i].toss()
             } else {
               biscuits[i].shoot(pointer.x, pointer.y);
             }
@@ -281,7 +281,7 @@
         enemies.push(new Enemy(scene));
         enemies[enemies.length - 1].shoot(
           config.width/2 + Math.randomBetween(-50,50),
-          config.board.origin.y + Math.randomBetween(config.height/2+200,config.height/2+200)
+          config.board.center.y + Math.randomBetween(-200, 200)
         );
       } else {
         //check for end of enemy turn
