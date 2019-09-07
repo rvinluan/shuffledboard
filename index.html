@@ -103,6 +103,7 @@
       this.load.image('biscuit-used','biscuit-used.png');
       this.load.image('biscuit-remaining','biscuit-remaining.png');
       this.load.image('enemy','Enemy.png');
+      this.load.image('peg','Peg.png');
     }
 
     function create () {
@@ -281,7 +282,7 @@
         enemies.push(new Enemy(scene));
         enemies[enemies.length - 1].shoot(
           config.width/2 + Math.randomBetween(-50,50),
-          config.board.center.y + Math.randomBetween(-200, 200)
+          config.board.center.y + Math.randomBetween(-200, 0)
         );
       } else {
         //check for end of enemy turn

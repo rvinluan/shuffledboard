@@ -5,7 +5,7 @@ function Field(scene) {
   this.scoreValues = [];
   this.scoreText = [];
 
-  this.archetypes = "abc".split("");
+  this.archetypes = "abcd".split("");
 
   this.defaultTextStyle = {
     fontSize: "40px",
@@ -167,4 +167,43 @@ Field.prototype.c = function() {
   this.scoreGeometry.push(q);
   this.scoreValues.push(pts);
   this.scoreText.push(txt);
+}
+
+/*
+===
+Pegs
+===
+*/
+Field.prototype.d = function(scene) {
+  let spacing = config.board.width / 4;
+  for(var i = 0; i < 3; i++) {
+    let p = this.scene.add.sprite(config.board.origin.x + (spacing*(i+1)), config.board.center.y - 180,'peg');
+    let b = Phaser.Physics.Matter.Matter.Bodies.circle(p.x, p.y, 5);
+    let peg = this.scene.matter.add.gameObject(p, b);
+    p.displayWidth = 20;
+    p.displayHeight = 60;
+    peg.displayOriginY = 25;
+    Phaser.Physics.Matter.Matter.Body.setStatic(peg.body, true)
+  }
+  for(var i = 0; i < 2; i++) {
+    let sx = config.width/2 + Math.randomBetween(-50,50);
+    let sy = config.board.origin.y + 300 + Math.randomBetween(50,100)*i;
+    let sw = Math.randomBetween(200,250) - 100*i;
+    let s = new Phaser.Geom.Circle(sx, sy, sw);
+    let pts = Math.randomBetween(5, 10);
+    let txt;
+    this.scoreGeometry.push(s);
+    this.scoreValues.push(pts);
+    this.graphics.lineStyle(5, 0xfc7244);
+    if(i == 0) {
+      this.graphics.lineStyle(5, 0x8381C5);
+    }
+    this.graphics.fillStyle(0xff0000)
+    this.graphics.strokeCircleShape(s);
+    txt = this.scene.add.text(sx-20, sy-20, pts, this.defaultTextStyle);
+    if(i == 0) {
+      txt.setColor("#8381C5");
+    }
+    this.scoreText.push(txt);
+  }
 }
