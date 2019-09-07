@@ -4,8 +4,9 @@ function Field(scene) {
   this.scoreGeometry = [];
   this.scoreValues = [];
   this.scoreText = [];
+  this.traps = [];
 
-  this.archetypes = "abcd".split("");
+  this.archetypes = "cd".split("");
 
   this.defaultTextStyle = {
     fontSize: "40px",
@@ -26,6 +27,7 @@ Field.prototype.destroy = function() {
   this.scoreGeometry = [];
   this.scoreValues = []
   this.scoreText.forEach( g=>g.destroy());
+  this.traps.forEach( g=>g.destroy());
 }
 
 /*
@@ -183,7 +185,8 @@ Field.prototype.d = function(scene) {
     p.displayWidth = 20;
     p.displayHeight = 60;
     peg.displayOriginY = 25;
-    Phaser.Physics.Matter.Matter.Body.setStatic(peg.body, true)
+    Phaser.Physics.Matter.Matter.Body.setStatic(peg.body, true);
+    this.traps.push(peg);
   }
   for(var i = 0; i < 2; i++) {
     let sx = config.width/2 + Math.randomBetween(-50,50);
