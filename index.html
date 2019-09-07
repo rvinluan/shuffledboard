@@ -282,7 +282,7 @@
         enemies.push(new Enemy(scene));
         enemies[enemies.length - 1].shoot(
           config.width/2 + Math.randomBetween(-50,50),
-          config.board.center.y + Math.randomBetween(-200, 0)
+          config.board.center.y + Math.randomBetween(-200, -50)
         );
       } else {
         //check for end of enemy turn
