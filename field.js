@@ -6,7 +6,7 @@ function Field(scene) {
   this.scoreText = [];
   this.traps = [];
 
-  this.archetypes = "cd".split("");
+  this.archetypes = "abcd".split("");
 
   this.defaultTextStyle = {
     fontSize: "40px",

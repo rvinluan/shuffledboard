@@ -161,7 +161,7 @@
           if(biscuits[i].state == "AIMING") {
             dynamicGraphics.clear();
             if (config.gameplay.realisticAiming) {
-              // biscuits[i].toss()
+              biscuits[i].toss()
             } else {
               biscuits[i].shoot(pointer.x, pointer.y);
             }
