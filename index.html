@@ -32,7 +32,7 @@
         <div class="total-points">0</div>
       </div>
       <div class="button-container">
-        <button class="restart">Restart</button>
+        <button class="next-level">Next Level -></button>
       </div>
     </div>
     <div id="health-ui">
@@ -60,15 +60,18 @@
     var biscuitsUsed = 0;
     var previousVelocity = new Phaser.Math.Vector2();
 
-    var hearts = 3;
-    var pointTotal = 0;
-
     var graphics;
     var dynamicGraphics;
     var endGraphics;
     var debugGraphics;
 
     var scoreAreas = [];
+
+    var g = {
+      state: "PLAY",
+      hearts: 3,
+      pointTotal: 0
+    }
 
     var config = {
         type: Phaser.AUTO,
@@ -166,8 +169,8 @@
       var b = new Biscuit(this);
       biscuits.push(b);
 
-      document.querySelector(".restart").addEventListener('click', function(){
-        restart(this);
+      document.querySelector(".next-level").addEventListener('click', function(){
+        nextLevel(this);
       }.bind(this));
 
       this.input.on('pointerup', function(pointer) {
@@ -250,6 +253,9 @@
     }
 
     function update() {
+      if(g.state !== "PLAY") {
+        return;
+      }
       var biscuitsmoving = false;
       var enemiesmoving = false;
       for(var i = 0; i < biscuits.length; i++) {
@@ -272,9 +278,9 @@
         if(!biscuits[i].isInside(board) && biscuits[i].state !== "AIMING") {
           biscuits[i].gameObject.destroy();
           biscuits.splice(i,1);
-          hearts--;
-          document.querySelector(".heart:nth-child("+(hearts+1)+")").classList.add("used");
-          if(hearts <= 0) {
+          g.hearts--;
+          document.querySelector(".heart:nth-child("+(g.hearts+1)+")").classList.add("used");
+          if(g.hearts <= 0) {
             gameOver(this);
           }
         }
@@ -297,6 +303,7 @@
     function checkforTurnEnd(scene) {
       if( turn > 8 ) {
         calculateEndScore(scene);
+        g.state = "ROUNDEND"
         return;
       }
       if( turn % 2 == 1) {
@@ -348,12 +355,12 @@
       document.querySelector(".your-score").innerText = BiscuitSubtotal;
       document.querySelector(".enemy-score").innerText = EnemySubtotal;
       document.querySelector(".final-score").innerText = BiscuitSubtotal - EnemySubtotal;
-      pointTotal += (BiscuitSubtotal - EnemySubtotal);
-      document.querySelector(".total-points").innerText = pointTotal;
+      g.pointTotal += (BiscuitSubtotal - EnemySubtotal);
+      document.querySelector(".total-points").innerText = g.pointTotal;
       document.querySelector("#scorecard").classList.add("shown");
     }
 
-    function restart(scene) {
+    function nextLevel(scene) {
       document.querySelector("#scorecard").classList.remove("shown");
       turn = 1;
       biscuitsUsed = 0;
@@ -373,12 +380,22 @@
       }
       var b = new Biscuit(scene);
       biscuits.push(b);
+      g.state = "PLAY";
       // window.location.reload();
+    }
+
+    function restart(scene) {
+      g.state = "PLAY";
+      g.hearts = 3;
+      document.querySelectorAll(".heart").forEach(n => n.classList.remove("used"));
+      g.pointTotal = 0;
+      nextLevel(scene);
     }
 
     function gameOver(scene) {
       setTimeout(function(){
-        alert('game over! Your score was '+pointTotal);
+        g.state = "GAMEEND";
+        alert('game over! Your score was '+g.pointTotal);
         restart(scene);
       }, 100)
     }
