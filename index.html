@@ -24,8 +24,12 @@
       </div>
       <hr>
       <div class="row total">
+        <div class="row-label">Final Score</div>
+        <div class="row-score final-score">32</div>
+      </div>
+      <div class="row">
         <div class="row-label">Total</div>
-        <div class="row-score total-score">32</div>
+        <div class="total-points">0</div>
       </div>
       <div class="button-container">
         <button class="restart">Restart</button>
@@ -343,9 +347,10 @@
 
       document.querySelector(".your-score").innerText = BiscuitSubtotal;
       document.querySelector(".enemy-score").innerText = EnemySubtotal;
-      document.querySelector(".total-score").innerText = BiscuitSubtotal - EnemySubtotal;
+      document.querySelector(".final-score").innerText = BiscuitSubtotal - EnemySubtotal;
+      pointTotal += (BiscuitSubtotal - EnemySubtotal);
+      document.querySelector(".total-points").innerText = pointTotal;
       document.querySelector("#scorecard").classList.add("shown");
-      pointTotal += BiscuitSubtotal - EnemySubtotal;
     }
 
     function restart(scene) {
