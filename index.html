@@ -57,6 +57,7 @@
     var previousVelocity = new Phaser.Math.Vector2();
 
     var hearts = 3;
+    var pointTotal = 0;
 
     var graphics;
     var dynamicGraphics;
@@ -344,6 +345,7 @@
       document.querySelector(".enemy-score").innerText = EnemySubtotal;
       document.querySelector(".total-score").innerText = BiscuitSubtotal - EnemySubtotal;
       document.querySelector("#scorecard").classList.add("shown");
+      pointTotal += BiscuitSubtotal - EnemySubtotal;
     }
 
     function restart(scene) {
@@ -371,7 +373,7 @@
 
     function gameOver(scene) {
       setTimeout(function(){
-        alert('game over!')
+        alert('game over! Your score was '+pointTotal);
         restart(scene);
       }, 100)
     }
