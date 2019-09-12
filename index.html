@@ -31,6 +31,11 @@
         <button class="restart">Restart</button>
       </div>
     </div>
+    <div id="health-ui">
+      <div class="heart"></div>
+      <div class="heart"></div>
+      <div class="heart"></div>
+    </div>
     <!-- helpers -->
     <script>
       Math.randomBetween = function(min, max) {
@@ -51,9 +56,12 @@
     var biscuitsUsed = 0;
     var previousVelocity = new Phaser.Math.Vector2();
 
+    var hearts = 3;
+
     var graphics;
     var dynamicGraphics;
     var endGraphics;
+    var debugGraphics;
 
     var scoreAreas = [];
 
@@ -109,6 +117,7 @@
     function create () {
       graphics = this.add.graphics({ fillStyle: { color: 0x322E27 } });
       dynamicGraphics = this.add.graphics();
+      debugGraphics = this.add.graphics();
 
       // var score = this.add.image(w/2,150,'score').setOrigin(0.5,0);
       // score.scaleX = 2;
@@ -162,6 +171,8 @@
             dynamicGraphics.clear();
             if (config.gameplay.realisticAiming) {
               biscuits[i].toss()
+              debugGraphics.lineStyle(10, 0xff0000)
+              debugGraphics.lineBetween(biscuits[i].gameObject.x,biscuits[i].gameObject.y-10, biscuits[i].gameObject.x, biscuits[i].gameObject.y)
             } else {
               biscuits[i].shoot(pointer.x, pointer.y);
             }
@@ -196,7 +207,8 @@
               let vm = v.length();
               v.scale( (vm + 500) / vm );
               dynamicGraphics.clear();
-              dynamicGraphics.lineStyle(2, "#000000");
+              // dynamicGraphics.lineStyle(2, "#000000");
+              dynamicGraphics.lineGradientStyle(5, 0xff0000, 0xFFF5E7, 0xff0000, 0xFFF5E7);
               dynamicGraphics.lineBetween(
                 bx,
                 by,
@@ -206,6 +218,7 @@
               let a = v.clone(); //arrowhead vector
               a.normalize();
               a.scale(50);
+              /*
               //right head of arrow
               dynamicGraphics.lineBetween(
                 bx + v.x,
@@ -220,6 +233,7 @@
                 bx + v.x + (a.x * Math.cos(Math.PI*1.25)) - (a.y * Math.sin(Math.PI*1.25)),
                 by + v.y + (a.x * Math.sin(Math.PI*1.25)) + (a.y * Math.cos(Math.PI*1.25))
               );
+              */
             }
           }
         }
@@ -242,11 +256,22 @@
         if(biscuits[i].state == "AIMING") {
           if(biscuits[i].gameObject.y < config.board.throwLineY) {
             biscuits[i].toss();
+            // debugGraphics.lineStyle(10, 0xff0000)
+            // debugGraphics.lineBetween(biscuits[i].gameObject.x,biscuits[i].gameObject.y-10, biscuits[i].gameObject.x, biscuits[i].gameObject.y)
           }
+        }
+        if((biscuits[i].state == "AIMING" || biscuits[i].state == "SHOT")) {
+          // debugGraphics.lineStyle(5, 0x000000)
+          // debugGraphics.lineBetween(biscuits[i].gameObject.x,biscuits[i].gameObject.y-5, biscuits[i].gameObject.x, biscuits[i].gameObject.y)
         }
         if(!biscuits[i].isInside(board) && biscuits[i].state !== "AIMING") {
           biscuits[i].gameObject.destroy();
           biscuits.splice(i,1);
+          hearts--;
+          document.querySelector(".heart:nth-child("+(hearts+1)+")").classList.add("used");
+          if(hearts <= 0) {
+            gameOver(this);
+          }
         }
       }
       for(var i = 0; i < enemies.length; i++) {
@@ -342,6 +367,13 @@
       var b = new Biscuit(scene);
       biscuits.push(b);
       // window.location.reload();
+    }
+
+    function gameOver(scene) {
+      setTimeout(function(){
+        alert('game over!')
+        restart(scene);
+      }, 100)
     }
     </script>
   </body>

@@ -8,7 +8,7 @@ var Enemy = function(scene) {
   this.matterBody = scene.matter.add.gameObject(this.gameObject, body);
   this.matterBody.body.frictionAir = 0.02;
   Phaser.Physics.Matter.Matter.Body.setInertia(this.matterBody.body, Infinity);
-  Phaser.Physics.Matter.Matter.Body.setDensity(this.matterBody.body, 2);
+  Phaser.Physics.Matter.Matter.Body.setDensity(this.matterBody.body, 3);
   Phaser.Physics.Matter.Matter.Body.set(this.matterBody.body, "restitution", 0.8);
   this.matterBody.displayOriginY = 40;
 

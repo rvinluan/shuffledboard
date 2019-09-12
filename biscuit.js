@@ -8,6 +8,7 @@ var Biscuit = function(scene) {
   Phaser.Physics.Matter.Matter.Body.setDensity(this.matterBody.body, 1.3);
   Phaser.Physics.Matter.Matter.Body.set(this.matterBody.body, "restitution", 0.8);
   this.matterBody.displayOriginY = 40;
+  this.strength = 1;
 
   this.state = "LOADED";
 
@@ -26,7 +27,7 @@ Biscuit.prototype.shoot = function(x, y) {
   this.state = "SHOT";
   this.tago.destroy();
   var vector = new Phaser.Math.Vector2(x-this.gameObject.x, y-this.gameObject.y);
-  Phaser.Physics.Matter.Matter.Body.applyForce(this.matterBody.body, this.gameObject, vector.scale(1));
+  Phaser.Physics.Matter.Matter.Body.applyForce(this.matterBody.body, this.gameObject, vector.scale(this.strength));
   biscuitsUsed++;
   turnIndicators[5-biscuitsUsed].setTexture('biscuit-used');
 }
@@ -37,11 +38,11 @@ Biscuit.prototype.toss = function() {
     this.gameObject.x - this.previousVelocity.x,
     this.gameObject.y - this.previousVelocity.y
   );
-  // console.log(v.length());
+  console.log(v.length());
   let vl = v.length();
-  if(vl < 25) {
-    v.scale( 25 / vl );
-  }
+  // if(vl < 25) {
+  //   v.scale( 25 / vl );
+  // }
   Phaser.Physics.Matter.Matter.Body.applyForce(this.matterBody.body, this.gameObject, v.scale(5));
   biscuitsUsed++;
   turnIndicators[5-biscuitsUsed].setTexture('biscuit-used');
