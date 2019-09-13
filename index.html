@@ -270,13 +270,22 @@
           x2 - x1,
           (config.board.origin.y + config.board.height) - config.board.center.y
         );
-        let v2 = v.clone();
         v.normalize();
+        let v2 = v.clone();
         v.scale(config.board.origin.y + config.board.height - config.board.throwLineY);
-        enemyGraphics.lineStyle(3, 0xD2C8B9);
-        enemyGraphics.lineBetween(x1, config.board.origin.y + config.board.height, x1 + v.x, config.board.origin.y + config.board.height - v.y);
+        v2.scale(8);
         enemyVectors.push( x1 );
         enemyVectors.push( x1 + v.x );
+        //dotted line!        
+        enemyGraphics.lineStyle(3, 0xD2C8B9);
+        let dx = x1, dy = config.board.origin.y + config.board.height;
+        for(let j = 0; j < 25; j++) {
+          if(j%2==0) {
+            enemyGraphics.lineBetween(dx, dy, dx+v2.x, dy-v2.y);
+          }
+          dx = dx+v2.x;
+          dy = dy-v2.y;
+        }
         let t = game.scene.scenes[0].add.text(x1, config.board.origin.y + config.board.height + 20, i+1, {
           fontFamily: 'Space Mono',
           color: '#D2C8B9',
