@@ -58,12 +58,16 @@
     var turn = 1; //odd is player turn, even is enemy
     var turnIndicators = [];
     var biscuitsUsed = 0;
+    var enemiesUsed = 0;
     var previousVelocity = new Phaser.Math.Vector2();
+    var enemyVectors = [];
+    var enemyPathLabels = [];
 
     var graphics;
     var dynamicGraphics;
     var endGraphics;
     var debugGraphics;
+    var enemyGraphics;
 
     var scoreAreas = [];
 
@@ -87,7 +91,7 @@
             }
           },
           get throwLineY() {
-            return this.origin.y + this.height - 400;
+            return this.origin.y + this.height - 200;
           },
           get center() {
             return {
@@ -97,7 +101,8 @@
           }
         },
         gameplay: {
-          realisticAiming: location.search.match("real") !== null
+          realisticAiming: location.search.match("real") !== null,
+          maxTurns: 8
         },
         physics: {
             default: 'matter',
@@ -126,6 +131,7 @@
       graphics = this.add.graphics({ fillStyle: { color: 0x322E27 } });
       dynamicGraphics = this.add.graphics();
       debugGraphics = this.add.graphics();
+      enemyGraphics = this.add.graphics();
 
       // var score = this.add.image(w/2,150,'score').setOrigin(0.5,0);
       // score.scaleX = 2;
@@ -154,9 +160,10 @@
 
       this.field = new Field(this);
       this.field.init();
+      setupEnemyPaths();
 
       //draw ui
-      for(var j = 0; j < 5; j++) {
+      for(let j = 0; j < 5; j++) {
         let bi = this.add.sprite(
           (config.width - config.board.width) / 4,
           config.board.origin.y + (j*50) + 25,
@@ -185,6 +192,10 @@
               biscuits[i].shoot(pointer.x, pointer.y);
             }
           } else if (biscuits[i].state == "LOADED") {
+            //move the biscuit left or right
+            if(board.contains(pointer.x, pointer.y)) {
+              return;
+            }
             let increment = config.board.width / 5;
             if(pointer.x < config.width/2 && biscuits[i].gameObject.x - increment > config.board.origin.x) {
               biscuits[i].gameObject.x -= increment;
@@ -249,6 +260,33 @@
 
     }
 
+    function setupEnemyPaths() {
+      //initialize enemyVectors
+      enemyGraphics.clear();
+      for(let i = 0; i < Math.floor(config.gameplay.maxTurns / 2); i++) {
+        let x1 = Math.randomBetween( config.board.origin.x, config.board.origin.x + config.board.width );
+        let x2 = Math.randomBetween( config.board.center.x - 50, config.board.center.x + 50 );
+        let v = new Phaser.Math.Vector2(
+          x2 - x1,
+          (config.board.origin.y + config.board.height) - config.board.center.y
+        );
+        let v2 = v.clone();
+        v.normalize();
+        v.scale(config.board.origin.y + config.board.height - config.board.throwLineY);
+        enemyGraphics.lineStyle(3, 0xD2C8B9);
+        enemyGraphics.lineBetween(x1, config.board.origin.y + config.board.height, x1 + v.x, config.board.origin.y + config.board.height - v.y);
+        enemyVectors.push( x1 );
+        enemyVectors.push( x1 + v.x );
+        let t = game.scene.scenes[0].add.text(x1, config.board.origin.y + config.board.height + 20, i+1, {
+          fontFamily: 'Space Mono',
+          color: '#D2C8B9',
+          fontSize: '30px'
+        });
+        t.setOrigin(0.5,0.5)
+        enemyPathLabels.push(t);
+      }
+    }
+
     function preUpdate() {
     }
 
@@ -301,7 +339,7 @@
     }
 
     function checkforTurnEnd(scene) {
-      if( turn > 8 ) {
+      if( turn > config.gameplay.maxTurns ) {
         calculateEndScore(scene);
         g.state = "ROUNDEND"
         return;
@@ -316,11 +354,12 @@
           }
         }
         turn++;
-        enemies.push(new Enemy(scene));
+        enemies.push(new Enemy(scene, enemiesUsed));
         enemies[enemies.length - 1].shoot(
-          config.width/2 + Math.randomBetween(-50,50),
-          config.board.center.y + Math.randomBetween(-200, -50)
+          enemyVectors[(enemiesUsed)*2 + 1],
+          config.board.throwLineY
         );
+        enemiesUsed++;
       } else {
         //check for end of enemy turn
         if(enemies.length == 0) {
@@ -367,10 +406,13 @@
       scene.field.destroy();
       scene.field = new Field(scene);
       scene.field.init();
-      for(var i = 0; i < biscuits.length; i++) {
+      enemyPathLabels.forEach( t => t.destroy() );
+      //new enemyVectors
+      setupEnemyPaths();
+      for(let i = 0; i < biscuits.length; i++) {
         biscuits[i].gameObject.destroy();
       }
-      for(var i = 0; i < enemies.length; i++) {
+      for(let i = 0; i < enemies.length; i++) {
         enemies[i].gameObject.destroy();
       }
       biscuits = [];
