@@ -282,6 +282,7 @@
     function setupEnemyPaths() {
       //initialize enemyVectors
       enemyVectors = [];
+      enemiesUsed = 0;
       enemyGraphics.clear();
       for(let i = 0; i < Math.floor(config.gameplay.maxTurns / 2); i++) {
         let x1 = Math.randomBetween( config.board.origin.x, config.board.origin.x + config.board.width );
