@@ -95,6 +95,7 @@
     var endGraphics;
     var debugGraphics;
     var enemyGraphics;
+    var throwStrengthLabel;
 
     var scoreAreas = [];
 
@@ -207,6 +208,9 @@
               debugGraphics.lineBetween(biscuits[i].gameObject.x,biscuits[i].gameObject.y-10, biscuits[i].gameObject.x, biscuits[i].gameObject.y)
             } else {
               if(pointer.y <= config.board.throwLineY) {
+                if(throwStrengthLabel) {
+                  throwStrengthLabel.destroy();
+                }
                 biscuits[i].shoot(pointer.x, pointer.y);
               }
             }
@@ -253,6 +257,15 @@
                 bx + v.x,
                 by + v.y
               );
+              if(throwStrengthLabel) {
+                throwStrengthLabel.destroy();
+              }
+              let displayLength = Math.round(v.length());
+              throwStrengthLabel = game.scene.scenes[0].add.text(pointer.x-150,pointer.y,displayLength-500, {
+                fontFamily: "Space Mono",
+                fontSize: "25px",
+                color: "#000000"
+              });
               /*
               let a = v.clone(); //arrowhead vector
               a.normalize();
