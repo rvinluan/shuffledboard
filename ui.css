@@ -67,16 +67,17 @@
 }
 
 .heart {
-  background-color: white;
+  background-image: url("heart-remaining.svg");
+  background-repeat: no-repeat;
+  background-size: 100%;
   border-radius: 10px;
   width: 40px;
   height: 40px;
   margin-bottom: 10px;
-  border: 2px solid white;
 }
 
 .heart.used {
-  background-color: transparent;
+  background-image: url("heart-used.svg");
 }
 
 .shots-ui {
