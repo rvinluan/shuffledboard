@@ -210,3 +210,7 @@ Field.prototype.d = function(scene) {
     this.scoreText.push(txt);
   }
 }
+
+Field.prototype.e = function(scene) {
+  
+}

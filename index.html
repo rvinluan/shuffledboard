@@ -35,11 +35,24 @@
         <button class="next-level">Next Level -></button>
       </div>
     </div>
-    <div id="health-ui">
-      <div class="heart"></div>
-      <div class="heart"></div>
-      <div class="heart"></div>
+    <div id="ui">
+      <div class="level-ui">
+        01
+      </div>
+      <div class="shots-ui">
+        <div class="shot"></div>
+        <div class="shot"></div>
+        <div class="shot"></div>
+        <div class="shot"></div>
+        <div class="shot"></div>
+      </div>
+      <div class="health-ui">
+        <div class="heart"></div>
+        <div class="heart"></div>
+        <div class="heart"></div>
+      </div>
     </div>
+
     <!-- helpers -->
     <script>
       Math.randomBetween = function(min, max) {
@@ -74,7 +87,8 @@
     var g = {
       state: "PLAY",
       hearts: 3,
-      pointTotal: 0
+      pointTotal: 0,
+      level: 1
     }
 
     var config = {
@@ -133,10 +147,6 @@
       debugGraphics = this.add.graphics();
       enemyGraphics = this.add.graphics();
 
-      // var score = this.add.image(w/2,150,'score').setOrigin(0.5,0);
-      // score.scaleX = 2;
-      // score.scaleY = 2;
-
       this.matter.world.setBounds(0, 0, w, h);
       this.matter.world.setGravity(0, 0);
 
@@ -162,17 +172,6 @@
       this.field.init();
       setupEnemyPaths();
 
-      //draw ui
-      for(let j = 0; j < 5; j++) {
-        let bi = this.add.sprite(
-          (config.width - config.board.width) / 4,
-          config.board.origin.y + (j*50) + 25,
-          'biscuit-remaining');
-        bi.displayWidth = bi.width*2;
-        bi.displayHeight = bi.height*2;
-        turnIndicators.push(bi);
-      }
-
       var b = new Biscuit(this);
       biscuits.push(b);
 
@@ -189,7 +188,9 @@
               debugGraphics.lineStyle(10, 0xff0000)
               debugGraphics.lineBetween(biscuits[i].gameObject.x,biscuits[i].gameObject.y-10, biscuits[i].gameObject.x, biscuits[i].gameObject.y)
             } else {
-              biscuits[i].shoot(pointer.x, pointer.y);
+              if(pointer.y <= config.board.throwLineY) {
+                biscuits[i].shoot(pointer.x, pointer.y);
+              }
             }
           } else if (biscuits[i].state == "LOADED") {
             //move the biscuit left or right
@@ -227,18 +228,18 @@
               v.scale( (vm + 500) / vm );
               dynamicGraphics.clear();
               // dynamicGraphics.lineStyle(2, "#000000");
-              dynamicGraphics.lineGradientStyle(5, 0xff0000, 0xFFF5E7, 0xff0000, 0xFFF5E7);
+              dynamicGraphics.lineGradientStyle(5, 0xE15B3E, 0xFFF5E7, 0xE15B3E, 0xFFF5E7);
               dynamicGraphics.lineBetween(
                 bx,
                 by,
                 bx + v.x,
                 by + v.y
               );
+              /*
               let a = v.clone(); //arrowhead vector
               a.normalize();
               a.scale(50);
-              /*
-              //right head of arrow
+              right head of arrow
               dynamicGraphics.lineBetween(
                 bx + v.x,
                 by + v.y,
@@ -276,7 +277,7 @@
         v2.scale(8);
         enemyVectors.push( x1 );
         enemyVectors.push( x1 + v.x );
-        //dotted line!        
+        //dotted line!
         enemyGraphics.lineStyle(3, 0xD2C8B9);
         let dx = x1, dy = config.board.origin.y + config.board.height;
         for(let j = 0; j < 25; j++) {
@@ -294,9 +295,6 @@
         t.setOrigin(0.5,0.5)
         enemyPathLabels.push(t);
       }
-    }
-
-    function preUpdate() {
     }
 
     function update() {
@@ -398,8 +396,6 @@
           }
         }
       }
-      // console.log(`Your score: ${BiscuitSubtotal} – enemy score: ${EnemySubtotal} = ${BiscuitSubtotal-EnemySubtotal}`);
-
       document.querySelector(".your-score").innerText = BiscuitSubtotal;
       document.querySelector(".enemy-score").innerText = EnemySubtotal;
       document.querySelector(".final-score").innerText = BiscuitSubtotal - EnemySubtotal;
@@ -411,12 +407,13 @@
     function nextLevel(scene) {
       document.querySelector("#scorecard").classList.remove("shown");
       turn = 1;
+      g.level++;
+      document.querySelector(".level-ui").innerText = g.level < 10 ? "0" + g.level : g.level;
       biscuitsUsed = 0;
       scene.field.destroy();
       scene.field = new Field(scene);
       scene.field.init();
       enemyPathLabels.forEach( t => t.destroy() );
-      //new enemyVectors
       setupEnemyPaths();
       for(let i = 0; i < biscuits.length; i++) {
         biscuits[i].gameObject.destroy();
@@ -426,19 +423,18 @@
       }
       biscuits = [];
       enemies = [];
-      for(var i = 0; i < turnIndicators.length; i++) {
-        turnIndicators[i].setTexture('biscuit-remaining');
-      }
+      document.querySelectorAll(".shot").forEach(n => n.classList.remove("used"));
       var b = new Biscuit(scene);
       biscuits.push(b);
       g.state = "PLAY";
-      // window.location.reload();
     }
 
     function restart(scene) {
       g.state = "PLAY";
       g.hearts = 3;
       document.querySelectorAll(".heart").forEach(n => n.classList.remove("used"));
+      g.level = 1;
+      document.querySelector(".level-ui").innerText = "01";
       g.pointTotal = 0;
       nextLevel(scene);
     }

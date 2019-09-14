@@ -48,10 +48,22 @@
   cursor: pointer;
 }
 
-#health-ui {
+#ui {
   position: absolute;
-  top: 400px;
-  left: 80px;
+  top: 0;
+  left: 0;
+  padding: 80px;
+  padding-left: 70px;
+}
+
+.level-ui {
+  background-color: #E15B3E;
+  padding: 15px;
+  color: white;
+  font-size: 40px;
+  margin-bottom: 40px;
+  font-family: "Space Mono";
+  text-rendering: antialiased;
 }
 
 .heart {
@@ -64,5 +76,22 @@
 }
 
 .heart.used {
+  background-color: transparent;
+}
+
+.shots-ui {
+  margin-bottom: 50px;
+}
+
+.shot {
+  background-color: #E15B3E;
+  border-radius: 40px;
+  width: 40px;
+  height: 40px;
+  margin-bottom: 10px;
+  border: 2px solid #E15B3E;
+}
+
+.shot.used {
   background-color: transparent;
 }

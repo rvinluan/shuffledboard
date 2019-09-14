@@ -32,7 +32,7 @@ Biscuit.prototype.shoot = function(x, y) {
   var vector = new Phaser.Math.Vector2(x-this.gameObject.x, y-this.gameObject.y);
   Phaser.Physics.Matter.Matter.Body.applyForce(this.matterBody.body, this.gameObject, vector.scale(this.strength));
   biscuitsUsed++;
-  turnIndicators[5-biscuitsUsed].setTexture('biscuit-used');
+  document.querySelector(".shot:nth-child("+(5-biscuitsUsed+1)+")").classList.add("used");
 }
 
 Biscuit.prototype.toss = function() {
@@ -41,14 +41,14 @@ Biscuit.prototype.toss = function() {
     this.gameObject.x - this.previousVelocity.x,
     this.gameObject.y - this.previousVelocity.y
   );
-  console.log(v.length());
+  // console.log(v.length());
   let vl = v.length();
   // if(vl < 25) {
   //   v.scale( 25 / vl );
   // }
   Phaser.Physics.Matter.Matter.Body.applyForce(this.matterBody.body, this.gameObject, v.scale(5));
   biscuitsUsed++;
-  turnIndicators[5-biscuitsUsed].setTexture('biscuit-used');
+  document.querySelector(".shot:nth-child("+(5-biscuitsUsed+1)+")").classList.add("used");
 }
 
 Biscuit.prototype.isMoving = function() {
