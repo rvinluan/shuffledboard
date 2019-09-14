@@ -95,3 +95,64 @@
 .shot.used {
   background-color: transparent;
 }
+
+#game-over-screen {
+  position: absolute;
+  width: 100vw;
+  height: 100vh;
+  background-color: #322E27;
+  z-index: 2;
+  padding: 100px;
+  color: white;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  font-family: "Space Mono";
+  transition: top .4s;
+  top: 100vh;
+}
+
+#game-over-screen.shown {
+  top: 0;
+}
+
+#game-over-screen h2 {
+  font: normal bold 110px/1 "Space Mono";
+  text-align: center;
+  margin-bottom: 2em;
+}
+
+#game-over-screen .report {
+  flex: 1;
+  font-size: 35px;
+  width: 50vw;
+  align-self: center;
+}
+
+.report .row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 30px;
+}
+
+.report .row .label {
+  margin-top: 0;
+}
+
+.report .row .score {
+  font-size: 80px;
+  font-weight: bold;
+  line-height: 1;
+  margin-top: 0;
+}
+
+.new-game-button {
+  font-size: 40px;
+  text-align: center;
+  padding: 50px 20px;
+  color: black;
+  background-color: #FFF5E7;
+  width: 50vw;
+  align-self: center;
+  cursor: pointer;
+}

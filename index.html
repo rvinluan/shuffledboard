@@ -13,6 +13,20 @@
   </head>
   <body>
     <!-- UI, which is done in html and css because it's so much better for laying out things -->
+    <div id="game-over-screen">
+      <h2>Game<br>Over</h2>
+      <div class="report">
+        <div class="row">
+          <p class="label">Level</p>
+          <p class="score level-score-report">1</p>
+        </div>
+        <div class="row">
+          <p class="label">Total Points</p>
+          <p class="score points-score-report">22</p>
+        </div>
+      </div>
+      <div class="new-game-button">New Game</div>
+    </div>
     <div id="scorecard">
       <div class="row">
         <div class="row-label">Your Score</div>
@@ -179,6 +193,10 @@
         nextLevel(this);
       }.bind(this));
 
+      document.querySelector(".new-game-button").addEventListener('click', function(){
+        restart(this);
+      }.bind(this));
+
       this.input.on('pointerup', function(pointer) {
         for(var i = 0; i < biscuits.length; i++) {
           if(biscuits[i].state == "AIMING") {
@@ -263,6 +281,7 @@
 
     function setupEnemyPaths() {
       //initialize enemyVectors
+      enemyVectors = [];
       enemyGraphics.clear();
       for(let i = 0; i < Math.floor(config.gameplay.maxTurns / 2); i++) {
         let x1 = Math.randomBetween( config.board.origin.x, config.board.origin.x + config.board.width );
@@ -433,17 +452,18 @@
       g.state = "PLAY";
       g.hearts = 3;
       document.querySelectorAll(".heart").forEach(n => n.classList.remove("used"));
-      g.level = 1;
-      document.querySelector(".level-ui").innerText = "01";
+      g.level = 0;
       g.pointTotal = 0;
+      document.querySelector("#game-over-screen").classList.remove("shown");
       nextLevel(scene);
     }
 
     function gameOver(scene) {
       setTimeout(function(){
         g.state = "GAMEEND";
-        alert('game over! Your score was '+g.pointTotal);
-        restart(scene);
+        document.querySelector(".level-score-report").innerText = g.level;
+        document.querySelector(".points-score-report").innerText = g.pointTotal;
+        document.querySelector("#game-over-screen").classList.add("shown");
       }, 100)
     }
     </script>
