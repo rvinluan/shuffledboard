@@ -115,7 +115,7 @@
           height: h - 200,
           get origin() {
             return {
-              x: (w - this.width)/2,
+              x: (w - this.width)/2 + 80,
               y: (h - this.height)/2
             }
           },
@@ -216,7 +216,7 @@
             }
           } else if (biscuits[i].state == "LOADED") {
             //move the biscuit left or right
-            if(board.contains(pointer.x, pointer.y)) {
+            if(board.contains(pointer.x, pointer.y) || config.gameplay.realisticAiming) {
               return;
             }
             let increment = config.board.width / 5;

@@ -37,7 +37,7 @@ Three circles
 */
 Field.prototype.a = function() {
   for(var i = 0; i < 3; i++) {
-    let sx = config.width/2 + Math.randomBetween(-50,50);
+    let sx = config.board.center.x + Math.randomBetween(-50,50);
     let sy = config.board.origin.y + 300 + (200*i);
     let sw = Math.randomBetween(100,200);
     let s = new Phaser.Geom.Circle(sx, sy, sw);
@@ -62,7 +62,7 @@ Field.prototype.b = function() {
   for(var i = 0; i < 5; i++) {
     let sx, sy, sw, s, pts, txt;
     if(i == 4) {
-      sx = config.width/2;
+      sx = config.board.center.x;
       sy = config.board.origin.y + 500;
       sw = Math.randomBetween(80,100);
       s = new Phaser.Geom.Circle(sx, sy, sw);
@@ -189,7 +189,7 @@ Field.prototype.d = function(scene) {
     this.traps.push(peg);
   }
   for(var i = 0; i < 2; i++) {
-    let sx = config.width/2 + Math.randomBetween(-50,50);
+    let sx = config.board.center.x + Math.randomBetween(-50,50);
     let sy = config.board.origin.y + 300 + Math.randomBetween(50,100)*i;
     let sw = Math.randomBetween(200,250) - 100*i;
     let s = new Phaser.Geom.Circle(sx, sy, sw);
@@ -212,5 +212,5 @@ Field.prototype.d = function(scene) {
 }
 
 Field.prototype.e = function(scene) {
-  
+
 }

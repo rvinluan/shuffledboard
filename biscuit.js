@@ -1,9 +1,9 @@
 var Biscuit = function(scene) {
   this.gameObject = scene.add.sprite(
-    w/2,
+    config.board.center.x,
     config.board.origin.y + config.board.height - 100,
     'biscuit').setInteractive();
-  this.tago = scene.add.ellipse(w/2, config.board.origin.y + config.board.height - 40,200,200,0x000000,0,this.gameObject).setInteractive();
+  this.tago = scene.add.ellipse(config.board.center.x, config.board.origin.y + config.board.height - 40,200,200,0x000000,0,this.gameObject).setInteractive();
   var body = Phaser.Physics.Matter.Matter.Bodies.circle(this.gameObject.x, this.gameObject.y, 30);
   this.matterBody = scene.matter.add.gameObject(this.gameObject, body);
   this.matterBody.body.frictionAir = 0.02;
