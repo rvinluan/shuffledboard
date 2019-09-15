@@ -120,7 +120,7 @@
             }
           },
           get throwLineY() {
-            return this.origin.y + this.height - 200;
+            return this.origin.y + this.height - 300;
           },
           get center() {
             return {
@@ -313,7 +313,7 @@
         //dotted line!
         enemyGraphics.lineStyle(3, 0xD2C8B9);
         let dx = x1, dy = config.board.origin.y + config.board.height;
-        for(let j = 0; j < 25; j++) {
+        for(let j = 0; j < 37; j++) {
           if(j%2==0) {
             enemyGraphics.lineBetween(dx, dy, dx+v2.x, dy-v2.y);
           }
