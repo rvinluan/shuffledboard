@@ -1,7 +1,7 @@
 var Enemy = function(scene, num) {
   var spr = scene.add.sprite(
-    enemyVectors[(num)*2],
-    config.board.origin.y + config.board.height,
+    config.board.origin.x + Math.randomBetween(50, config.board.width-50),
+    config.board.origin.y + Math.randomBetween(100, config.board.height/2-100),
     'enemy').setInteractive();
   this.gameObject = spr;
   var body = Phaser.Physics.Matter.Matter.Bodies.circle(this.gameObject.x, this.gameObject.y, 30);

@@ -294,6 +294,10 @@
 
     function setupEnemyPaths() {
       //initialize enemyVectors
+      for(let i = 0; i < 4; i++) {
+        enemies.push(new Enemy(game.scene.scenes[0]))
+      }
+      return;
       enemyVectors = [];
       enemiesUsed = 0;
       enemyGraphics.clear();
@@ -394,12 +398,12 @@
           }
         }
         turn++;
-        enemies.push(new Enemy(scene, enemiesUsed));
-        enemies[enemies.length - 1].shoot(
-          enemyVectors[(enemiesUsed)*2 + 1],
-          config.board.throwLineY
-        );
-        enemiesUsed++;
+        // enemies.push(new Enemy(scene, enemiesUsed));
+        // enemies[enemies.length - 1].shoot(
+        //   enemyVectors[(enemiesUsed)*2 + 1],
+        //   config.board.throwLineY
+        // );
+        // enemiesUsed++;
       } else {
         //check for end of enemy turn
         if(enemies.length == 0) {
@@ -447,7 +451,6 @@
       scene.field = new Field(scene);
       scene.field.init();
       enemyPathLabels.forEach( t => t.destroy() );
-      setupEnemyPaths();
       for(let i = 0; i < biscuits.length; i++) {
         biscuits[i].gameObject.destroy();
       }
@@ -456,6 +459,7 @@
       }
       biscuits = [];
       enemies = [];
+      setupEnemyPaths();
       document.querySelectorAll(".shot").forEach(n => n.classList.remove("used"));
       var b = new Biscuit(scene);
       biscuits.push(b);
